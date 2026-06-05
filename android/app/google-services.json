@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "556364465809",
+    "project_id": "feesify",
+    "storage_bucket": "feesify.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:556364465809:android:e662e660b0ba4c9100a130",
+        "android_client_info": {
+          "package_name": "com.example.feesify"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCu4bVWIkVZnaJquKcMLrKpy6iX3Xccxz0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

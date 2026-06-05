@@ -1,0 +1,178 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function userDocPath() {
+      return /databases/$(database)/documents/users/$(request.auth.uid);
+    }
+
+    function hasUserProfile() {
+      return isSignedIn() && exists(userDocPath());
+    }
+
+    function currentUser() {
+      return get(userDocPath()).data;
+    }
+
+    function isAdmin() {
+      return hasUserProfile() && currentUser().role == 'admin';
+    }
+
+    function isPrincipal() {
+      return hasUserProfile() && currentUser().role == 'principal';
+    }
+
+    function isBursar() {
+      return hasUserProfile() && currentUser().role == 'bursar';
+    }
+
+    function isAllowedAdminEmail() {
+      return isSignedIn()
+        && request.auth.token.email != null
+        && request.auth.token.email == 'abdihafitofficial@gmail.com';
+    }
+
+    function isOwnSchoolByField(schoolId) {
+      return hasUserProfile() && currentUser().schoolId == schoolId;
+    }
+
+    function canReadSchoolScopedDoc(schoolId) {
+      return isAdmin() || isOwnSchoolByField(schoolId);
+    }
+
+    function isInitialPrincipalRegistration() {
+      return isSignedIn() && !hasUserProfile();
+    }
+
+    function isValidPhoneLookup(phoneId) {
+      return phoneId.matches('^(07|01)[0-9]{8}$');
+    }
+
+    match /users/{userId} {
+      allow read: if isAdmin()
+        || request.auth.uid == userId
+        || (isPrincipal() && resource.data.schoolId == currentUser().schoolId);
+
+      allow create: if isAdmin()
+        || (
+          isAllowedAdminEmail()
+          && request.auth.uid == userId
+          && request.resource.data.role == 'admin'
+          && request.resource.data.email == request.auth.token.email
+          && request.resource.data.status == 'active'
+        )
+        || (
+          isInitialPrincipalRegistration()
+          && request.auth.uid == userId
+          && request.resource.data.role == 'principal'
+          && request.resource.data.status == 'pending approval'
+        )
+        || (
+          isPrincipal()
+          && request.resource.data.role == 'bursar'
+          && request.resource.data.schoolId == currentUser().schoolId
+          && request.resource.data.status == 'active'
+        );
+
+      allow update, delete: if isAdmin();
+    }
+
+    match /schools/{schoolId} {
+      allow read: if isAdmin() || isOwnSchoolByField(schoolId);
+
+      allow create: if isInitialPrincipalRegistration()
+        && request.resource.data.principalUserId == request.auth.uid
+        && request.resource.data.status == 'pending approval';
+
+      // Only admin can approve, reject, or deactivate schools.
+      allow update, delete: if isAdmin();
+    }
+
+    match /classes/{classId} {
+      allow read: if canReadSchoolScopedDoc(resource.data.schoolId);
+
+      allow create, update, delete: if isAdmin()
+        || (
+          isBursar()
+          && request.resource.data.schoolId == currentUser().schoolId
+        );
+    }
+
+    match /students/{studentId} {
+      allow read: if canReadSchoolScopedDoc(resource.data.schoolId);
+
+      // Bursar can create students only for their own school.
+      allow create: if isAdmin()
+        || (
+          isBursar()
+          && request.resource.data.schoolId == currentUser().schoolId
+        );
+
+      // Bursar can update students only inside their own school,
+      // which supports fee/balance updates during payment posting.
+      allow update: if isAdmin()
+        || (
+          isBursar()
+          && resource.data.schoolId == currentUser().schoolId
+          && request.resource.data.schoolId == currentUser().schoolId
+        );
+
+      allow delete: if isAdmin();
+    }
+
+    match /payments/{paymentId} {
+      allow read: if canReadSchoolScopedDoc(resource.data.schoolId);
+
+      // Bursar can create payments only for their own school.
+      allow create: if isAdmin()
+        || (
+          isBursar()
+          && request.resource.data.schoolId == currentUser().schoolId
+        );
+
+      // Prevent bursars from editing or deleting historical payment records.
+      allow update, delete: if isAdmin();
+    }
+
+    match /notifications/{notificationId} {
+      allow read, update, delete: if isAdmin();
+
+      // Allow system/admin notifications for new school registration.
+      allow create: if isAdmin()
+        || (
+          isInitialPrincipalRegistration()
+          && request.resource.data.recipientRole == 'admin'
+        );
+    }
+
+    match /loginIdentifiers/{phoneId} {
+      allow get: if isValidPhoneLookup(phoneId);
+      allow list: if false;
+
+      allow create: if isAdmin()
+        || (
+          isInitialPrincipalRegistration()
+          && request.resource.data.userId == request.auth.uid
+          && request.resource.data.role == 'principal'
+          && request.resource.data.status == 'pending approval'
+          && phoneId == request.resource.data.phoneNumber
+        )
+        || (
+          isPrincipal()
+          && request.resource.data.role == 'bursar'
+          && request.resource.data.schoolId == currentUser().schoolId
+          && request.resource.data.status == 'active'
+          && phoneId == request.resource.data.phoneNumber
+        );
+
+      allow update, delete: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
