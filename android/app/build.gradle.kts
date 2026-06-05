@@ -40,6 +40,14 @@ android {
     }
 }
 
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        variant.outputs.forEach { output ->
+            output.outputFileName.set("feesify-${variant.name}.apk")
+        }
+    }
+}
+
 flutter {
     source = "../.."
 }

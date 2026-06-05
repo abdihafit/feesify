@@ -184,12 +184,19 @@ class FirestoreService {
   Stream<List<StudentModel>> streamStudents(String schoolId) {
     return _studentsCollection
         .where('schoolId', isEqualTo: schoolId)
-        .orderBy('admissionNumber')
         .snapshots()
         .map((snapshot) {
-          return snapshot.docs
+          final List<StudentModel> students = snapshot.docs
               .map((doc) => StudentModel.fromMap(doc.id, doc.data()))
               .toList();
+
+          students.sort(
+            (a, b) => a.admissionNumber.toLowerCase().compareTo(
+              b.admissionNumber.toLowerCase(),
+            ),
+          );
+
+          return students;
         });
   }
 

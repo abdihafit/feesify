@@ -17,6 +17,14 @@ class StudentsScreen extends StatelessWidget {
     return StreamBuilder<List<StudentModel>>(
       stream: _firestoreService.streamStudents(schoolId),
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return EmptyState(
+            icon: Icons.error_outline,
+            title: 'Unable to load students',
+            message: snapshot.error.toString(),
+          );
+        }
+
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -39,7 +47,7 @@ class StudentsScreen extends StatelessWidget {
             return DashboardCard(
               title: student.fullName,
               subtitle:
-                  'Adm: ${student.admissionNumber} • ${student.guardianName}',
+                  'Adm: ${student.admissionNumber} | ${student.guardianName}',
               trailing: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -49,7 +57,7 @@ class StudentsScreen extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 4),
-                  Text('Outstanding balance'),
+                  const Text('Outstanding balance'),
                 ],
               ),
             );
