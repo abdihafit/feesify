@@ -38,16 +38,12 @@ class PrincipalDashboardScreen extends StatelessWidget {
         AppTab(
           label: 'Import Students',
           icon: Icons.upload_file_outlined,
-          child: StudentImportScreen(schoolId: user.schoolId, readOnly: true),
+          child: StudentImportScreen(schoolId: user.schoolId),
         ),
         AppTab(
           label: 'Payments',
           icon: Icons.receipt_long_outlined,
-          child: PaymentWorkspaceScreen(
-            schoolId: user.schoolId,
-            user: user,
-            readOnly: true,
-          ),
+          child: PaymentWorkspaceScreen(schoolId: user.schoolId, user: user),
         ),
         AppTab(
           label: 'Reports',
@@ -57,7 +53,7 @@ class PrincipalDashboardScreen extends StatelessWidget {
         AppTab(
           label: 'Classes & Streams',
           icon: Icons.class_outlined,
-          child: ClassSetupScreen(schoolId: user.schoolId, readOnly: true),
+          child: ClassSetupScreen(schoolId: user.schoolId),
         ),
         AppTab(
           label: 'Settings',

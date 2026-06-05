@@ -10,7 +10,6 @@ import '../bursar/bursar_dashboard_screen.dart';
 import '../principal/principal_dashboard_screen.dart';
 import 'login_screen.dart';
 import 'pending_approval_screen.dart';
-import 'verify_email_screen.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
@@ -102,10 +101,6 @@ class AuthGate extends StatelessWidget {
                 message:
                     'Your login exists, but your user profile is not ready yet. Please contact the administrator.',
               );
-            }
-
-            if (!firebaseUser.emailVerified) {
-              return VerifyEmailScreen(email: user.email);
             }
 
             if (user.status != 'active') {

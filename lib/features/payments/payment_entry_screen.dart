@@ -401,7 +401,7 @@ class _PaymentEntryScreenState extends State<PaymentEntryScreen> {
                         const SizedBox(height: 16),
                         if (widget.readOnly)
                           const Text(
-                            'Read-only mode: principals can inspect the payment entry workflow here, while bursars post the actual transactions.',
+                            'Read-only mode: inspect the payment entry workflow here.',
                           )
                         else
                           FilledButton(

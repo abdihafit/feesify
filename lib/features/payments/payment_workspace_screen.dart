@@ -28,7 +28,7 @@ class PaymentWorkspaceScreen extends StatelessWidget {
             title: 'Payments Workspace',
             subtitle:
                 readOnly
-                    ? 'Review payment records and preview bursar actions in read-only mode.'
+                    ? 'Review payment records and preview payment actions in read-only mode.'
                     : 'Record payments, search students, and review recent collections from one place.',
             child: Wrap(
               spacing: 12,

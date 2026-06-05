@@ -80,29 +80,14 @@ class _LoginScreenState extends State<LoginScreen> {
           email: _emailController.text.trim(),
         );
 
-        await _authService.sendEmailVerification(user: credential.user);
-        await _authService.signOut();
-
         if (!mounted) {
           return;
         }
 
-        _formKey.currentState!.reset();
-        _schoolNameController.clear();
-        _countyController.clear();
-        _principalNameController.clear();
-        _phoneController.clear();
-        _emailController.clear();
-        _passwordController.clear();
-
-        setState(() {
-          _isLoginMode = true;
-        });
-
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-              'Account created. Please verify your email before signing in.',
+              'School registration submitted. Email verification is optional and can be done later from the account area.',
             ),
           ),
         );

@@ -336,7 +336,7 @@ class _StudentImportScreenState extends State<StudentImportScreen> {
                 const Padding(
                   padding: EdgeInsets.only(bottom: 12),
                   child: Text(
-                    'Read-only mode: principals can review the import workflow here, while bursars perform uploads.',
+                    'Read-only mode: review the import workflow here.',
                   ),
                 ),
               Text(

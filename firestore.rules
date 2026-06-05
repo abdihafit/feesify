@@ -29,6 +29,10 @@ service cloud.firestore {
       return hasUserProfile() && currentUser().role == 'bursar';
     }
 
+    function isSchoolOperator() {
+      return isPrincipal() || isBursar();
+    }
+
     function isAllowedAdminEmail() {
       return isSignedIn()
         && request.auth.token.email != null
@@ -96,7 +100,7 @@ service cloud.firestore {
 
       allow create, update, delete: if isAdmin()
         || (
-          isBursar()
+          isSchoolOperator()
           && request.resource.data.schoolId == currentUser().schoolId
         );
     }
@@ -107,15 +111,15 @@ service cloud.firestore {
       // Bursar can create students only for their own school.
       allow create: if isAdmin()
         || (
-          isBursar()
+          isSchoolOperator()
           && request.resource.data.schoolId == currentUser().schoolId
         );
 
-      // Bursar can update students only inside their own school,
+      // School operators can update students only inside their own school,
       // which supports fee/balance updates during payment posting.
       allow update: if isAdmin()
         || (
-          isBursar()
+          isSchoolOperator()
           && resource.data.schoolId == currentUser().schoolId
           && request.resource.data.schoolId == currentUser().schoolId
         );
@@ -129,11 +133,11 @@ service cloud.firestore {
       // Bursar can create payments only for their own school.
       allow create: if isAdmin()
         || (
-          isBursar()
+          isSchoolOperator()
           && request.resource.data.schoolId == currentUser().schoolId
         );
 
-      // Prevent bursars from editing or deleting historical payment records.
+      // Prevent school operators from editing or deleting historical payment records.
       allow update, delete: if isAdmin();
     }
 

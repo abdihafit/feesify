@@ -160,7 +160,7 @@ class _ClassSetupScreenState extends State<ClassSetupScreen> {
                 const SizedBox(height: 16),
                 if (widget.readOnly)
                   const Text(
-                    'Read-only mode: principals can review class streams here, while bursars handle day-to-day updates.',
+                    'Read-only mode: review configured class streams here.',
                   )
                 else
                   Wrap(

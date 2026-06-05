@@ -62,8 +62,6 @@ class _ManageBursarScreenState extends State<ManageBursarScreen> {
         schoolId: widget.principal.schoolId,
       );
 
-      await _authService.sendEmailVerification(user: credential.user);
-
       if (!mounted) {
         return;
       }
@@ -77,7 +75,7 @@ class _ManageBursarScreenState extends State<ManageBursarScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Bursar account created. A verification email has been sent.',
+            'Bursar account created and linked to this school.',
           ),
         ),
       );
