@@ -23,10 +23,10 @@ class BursarDashboardScreen extends StatelessWidget {
           'Record collections, monitor status, and follow up on balances.',
       user: user,
       tabs: <AppTab>[
-        const AppTab(
+        AppTab(
           label: 'Dashboard',
           icon: Icons.dashboard_outlined,
-          child: BursarHomeScreen(),
+          child: BursarHomeScreen(user: user),
         ),
         AppTab(
           label: 'Students',
